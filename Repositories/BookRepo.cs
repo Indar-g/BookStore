@@ -1,4 +1,5 @@
 ﻿using BookStore.Data;
+using BookStore.Helpers;
 using BookStore.Interfaces;
 using BookStore.Models.DTOs.Book;
 using BookStore.Models.Entities;
@@ -15,9 +16,7 @@ namespace BookStore.Repositories
             _context = context;
         }
 
-        
-
-        public async Task<Book> CreateAsync(Book book) // Adding a book
+        public async Task<Book> CreateAsync(Book book)
         {
             await _context.Books.AddAsync(book);
             await _context.SaveChangesAsync();
@@ -51,9 +50,29 @@ namespace BookStore.Repositories
             b.AuthorId == id);
         }
 
-        public async Task<List<Book>> GetAllAsync()
+        public async Task<List<Book>> GetAllAsync(QueryObject query)
         {
-            return await _context.Books.Include(b => b.Author).Include(b => b.Reviews).ToListAsync();
+            var books = _context.Books.Include(b => b.Author).Include(b => b.Reviews).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.Title))
+            {
+                books = books.Where(b => b.Title.ToLower().Contains(query.Title.ToLower()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Genre))
+            {
+                books = books.Where(b => b.Genre.ToLower().Contains(query.Genre.ToLower()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                if(query.SortBy.Equals("Price", StringComparison.OrdinalIgnoreCase))
+                {
+                    books = query.IsDescending ? books.OrderByDescending(b => b.Price) : books.OrderBy(b => b.Price);
+                }
+            }
+
+            return await books.ToListAsync();
         }
 
         public async Task<Book?> GetByIdAsync(int id)

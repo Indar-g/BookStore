@@ -1,4 +1,5 @@
-﻿using BookStore.Interfaces;
+﻿using BookStore.Helpers;
+using BookStore.Interfaces;
 using BookStore.Mappers;
 using BookStore.Models.DTOs.Book;
 using Microsoft.AspNetCore.Http;
@@ -54,9 +55,9 @@ namespace BookStore.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
-            var books = await _bookRepo.GetAllAsync();
+            var books = await _bookRepo.GetAllAsync(query);
 
             var allBooksDTO = books.Select(book => book.ToBookDTO()).ToList();
 
