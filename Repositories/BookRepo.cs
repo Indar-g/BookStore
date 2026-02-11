@@ -17,7 +17,7 @@ namespace BookStore.Repositories
 
         
 
-        public async Task<Book> CreateAsync(Book book)
+        public async Task<Book> CreateAsync(Book book) // Adding a book
         {
             await _context.Books.AddAsync(book);
             await _context.SaveChangesAsync();
