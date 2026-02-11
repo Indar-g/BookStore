@@ -128,12 +128,16 @@ namespace BookStore.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var bookExists = await _bookRepo.ExistsByIdAsync(id);
-
-            if (!bookExists)
+            var book = await _bookRepo.GetByIdAsync(id);
+            if (book is null)
             {
                 return NotFound("Книга не найдена");
             }
+            if (!string.IsNullOrEmpty(book.BookImage))
+            {
+                await _fileService.DeleteFileAsync(book.BookImage);
+            }
+
             await _bookRepo.DeleteAsync(id);
 
             return NoContent();
