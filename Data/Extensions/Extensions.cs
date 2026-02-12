@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace BookStore.Data
+namespace BookStore.Data.Extensions
 {
     public static class Extensions
     {

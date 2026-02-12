@@ -2,6 +2,7 @@
 using BookStore.Interfaces;
 using BookStore.Mappers;
 using BookStore.Models.DTOs.Book;
+using BookStore.Models.Paging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
@@ -57,11 +58,22 @@ namespace BookStore.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
-            var books = await _bookRepo.GetAllAsync(query);
+            var pagedResult = await _bookRepo.GetAllAsync(query);
 
-            var allBooksDTO = books.Select(book => book.ToBookDTO()).ToList();
+            var bookDTOs = pagedResult.Data.Select(book => book.ToBookDTO()).ToList();
 
-            return Ok(allBooksDTO);
+            var response = new PagedResult<BookDTO>()
+            {
+                Data = bookDTOs,
+                CurrentPage = pagedResult.CurrentPage,
+                TotalCount = pagedResult.TotalCount,
+                PageSize = pagedResult.PageSize,
+                TotalPages = pagedResult.TotalPages,
+                HasNext = pagedResult.HasNext,
+                HasPrevious = pagedResult.HasPrevious
+            };
+
+            return Ok(response);
         }
 
         [HttpPut("{id:int}")]

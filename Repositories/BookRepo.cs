@@ -1,8 +1,11 @@
 ﻿using BookStore.Data;
+using BookStore.Data.Extensions;
 using BookStore.Helpers;
 using BookStore.Interfaces;
+using BookStore.Mappers;
 using BookStore.Models.DTOs.Book;
 using BookStore.Models.Entities;
+using BookStore.Models.Paging;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 
@@ -50,7 +53,7 @@ namespace BookStore.Repositories
             b.AuthorId == id);
         }
 
-        public async Task<List<Book>> GetAllAsync(QueryObject query)
+        public async Task<PagedResult<Book>> GetAllAsync(QueryObject query)
         {
             var books = _context.Books.Include(b => b.Author).Include(b => b.Reviews).AsQueryable();
 
@@ -66,13 +69,34 @@ namespace BookStore.Repositories
 
             if (!string.IsNullOrWhiteSpace(query.SortBy))
             {
-                if(query.SortBy.Equals("Price", StringComparison.OrdinalIgnoreCase))
+                if(query.SortBy.Equals("Цена", StringComparison.OrdinalIgnoreCase))
                 {
                     books = query.IsDescending ? books.OrderByDescending(b => b.Price) : books.OrderBy(b => b.Price);
                 }
+                else if(query.SortBy.Equals("Айди", StringComparison.OrdinalIgnoreCase))
+                {
+                    books = query.IsDescending ? books.OrderByDescending(b => b.Id) : books.OrderBy(b => b.Id);
+                }
             }
 
-            return await books.ToListAsync();
+            var totalCount = await books.CountAsync();
+            var items = await books //создаем объект который будет показываться с пагинацией
+                .Skip((query.PageNumber - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .ToListAsync();
+            
+            var totalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize); //общее кол-во страниц
+
+            return new PagedResult<Book>
+            {
+                Data = items,
+                CurrentPage = query.PageNumber,
+                PageSize = query.PageSize,
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                HasNext = query.PageNumber < totalPages,
+                HasPrevious = query.PageNumber > 1
+            };
         }
 
         public async Task<Book?> GetByIdAsync(int id)

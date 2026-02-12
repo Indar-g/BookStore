@@ -1,14 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BookStore.Helpers
+namespace BookStore.Models.Paging
 {
-    public class QueryObject
+    public class PaginationParams
     {
-        public string? Title { get; set; } = null;
-        public string? Genre { get; set; } = null;
-        public string? SortBy { get; set; } = null;
-        public bool IsDescending { get; set; } = false;
-
         private const int MaxPageSize = 50;
         private int _pageSize = 10;
 

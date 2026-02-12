@@ -1,4 +1,4 @@
-using BookStore.Data;
+using BookStore.Data.Extensions;
 using BookStore.Interfaces;
 using BookStore.Repositories;
 using BookStore.Services;
