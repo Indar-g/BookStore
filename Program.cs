@@ -30,6 +30,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<AppDbContext>();
 
+//Диплом
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme =
@@ -50,7 +51,7 @@ builder.Services.AddAuthentication(options =>
             System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]) //предупреждение потому что не знает что в appsettings есть секция JWT с ключом. можно не обращать внимание
             )
     };
-});
+}); 
 
 
 var app = builder.Build();
