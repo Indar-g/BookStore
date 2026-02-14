@@ -135,6 +135,21 @@ namespace BookStore.Migrations
                     b.ToTable("Books");
                 });
 
+            modelBuilder.Entity("BookStore.Models.Entities.Cart", b =>
+                {
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("AppUserId", "BookId");
+
+                    b.HasIndex("BookId");
+
+                    b.ToTable("Carts");
+                });
+
             modelBuilder.Entity("BookStore.Models.Entities.Review", b =>
                 {
                     b.Property<int>("Id")
@@ -321,6 +336,25 @@ namespace BookStore.Migrations
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("BookStore.Models.Entities.Cart", b =>
+                {
+                    b.HasOne("BookStore.Models.Entities.AppUser", "AppUser")
+                        .WithMany("Carts")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookStore.Models.Entities.Book", "Book")
+                        .WithMany("Carts")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Book");
+                });
+
             modelBuilder.Entity("BookStore.Models.Entities.Review", b =>
                 {
                     b.HasOne("BookStore.Models.Entities.Book", "Book")
@@ -383,6 +417,11 @@ namespace BookStore.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BookStore.Models.Entities.AppUser", b =>
+                {
+                    b.Navigation("Carts");
+                });
+
             modelBuilder.Entity("BookStore.Models.Entities.Author", b =>
                 {
                     b.Navigation("Books");
@@ -390,6 +429,8 @@ namespace BookStore.Migrations
 
             modelBuilder.Entity("BookStore.Models.Entities.Book", b =>
                 {
+                    b.Navigation("Carts");
+
                     b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618

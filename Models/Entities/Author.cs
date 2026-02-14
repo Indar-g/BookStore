@@ -1,5 +1,8 @@
-﻿namespace BookStore.Models.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BookStore.Models.Entities
 {
+    [Table("Authors")]
     public class Author
     {
         public int Id { get; set; }

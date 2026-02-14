@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookStore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260212185157_AddRolesWithStaticId")]
-    partial class AddRolesWithStaticId
+    [Migration("20260214151202_AddCartManyToMany")]
+    partial class AddCartManyToMany
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,6 +136,21 @@ namespace BookStore.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("BookStore.Models.Entities.Cart", b =>
+                {
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("AppUserId", "BookId");
+
+                    b.HasIndex("BookId");
+
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("BookStore.Models.Entities.Review", b =>
@@ -324,6 +339,25 @@ namespace BookStore.Migrations
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("BookStore.Models.Entities.Cart", b =>
+                {
+                    b.HasOne("BookStore.Models.Entities.AppUser", "AppUser")
+                        .WithMany("Carts")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookStore.Models.Entities.Book", "Book")
+                        .WithMany("Carts")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Book");
+                });
+
             modelBuilder.Entity("BookStore.Models.Entities.Review", b =>
                 {
                     b.HasOne("BookStore.Models.Entities.Book", "Book")
@@ -386,6 +420,11 @@ namespace BookStore.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BookStore.Models.Entities.AppUser", b =>
+                {
+                    b.Navigation("Carts");
+                });
+
             modelBuilder.Entity("BookStore.Models.Entities.Author", b =>
                 {
                     b.Navigation("Books");
@@ -393,6 +432,8 @@ namespace BookStore.Migrations
 
             modelBuilder.Entity("BookStore.Models.Entities.Book", b =>
                 {
+                    b.Navigation("Carts");
+
                     b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
