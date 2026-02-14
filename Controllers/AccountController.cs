@@ -13,10 +13,12 @@ namespace BookStore.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
-        public AccountController(UserManager<AppUser> userManager, ITokenService tokenService)
+        private readonly SignInManager<AppUser> _signInManager;
+        public AccountController(UserManager<AppUser> userManager, ITokenService tokenService, SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _signInManager = signInManager;
         }
 
         [HttpPost("register")]
@@ -64,6 +66,34 @@ namespace BookStore.Controllers
             {
                 return StatusCode(500, e);
             }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!loginDTO.Email.Contains("@"))
+            {
+                return BadRequest("Поле Email должно содержать знак @");
+            }
+
+            var user = _userManager.Users.FirstOrDefault(u => u.Email.ToLower() == loginDTO.Email.ToLower()); //проверка почты
+            if (user == null) return Unauthorized("Пользователь с таким email не найден");
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
+
+            if (!result.Succeeded) return Unauthorized("Почта либо пароль не совпадают"); //не даём понять что именно было не так введено
+
+            return Ok(new NewUserDTO
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                Token = _tokenService.CreateToken(user)
+            });
         }
     }
 }

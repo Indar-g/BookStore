@@ -3,6 +3,7 @@ using BookStore.Interfaces;
 using BookStore.Mappers;
 using BookStore.Models.DTOs.Book;
 using BookStore.Models.Paging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
@@ -56,6 +57,7 @@ namespace BookStore.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
             var pagedResult = await _bookRepo.GetAllAsync(query);

@@ -24,7 +24,7 @@ namespace BookStore.Services
                 new Claim(JwtRegisteredClaimNames.GivenName, user.UserName)
             };
 
-            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature); //шифрование ключа
+            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature); //криптографическая подпись, защищающая от подделки
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
