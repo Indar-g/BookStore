@@ -1,9 +1,12 @@
-﻿using BookStore.Models.Entities;
+﻿using BookStore.Models.DTOs.Cart;
+using BookStore.Models.Entities;
 
 namespace BookStore.Interfaces
 {
     public interface ICartRepo
     {
-        Task<List<Book>> GetUserCart(AppUser user);
+        Task<List<BookCartItemDTO>> GetUserCart(AppUser user);
+        Task<List<BookCartItemDTO>> AddItemToCart(AppUser user, int bookId);
+        Task<List<BookCartItemDTO>> RemoveItemFromCart(AppUser user, int bookId);
     }
 }

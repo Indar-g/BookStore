@@ -1,5 +1,6 @@
 ﻿using BookStore.Data;
 using BookStore.Interfaces;
+using BookStore.Models.DTOs.Cart;
 using BookStore.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,18 +13,56 @@ namespace BookStore.Repositories
         {
             _context = context;
         }
-        public async Task<List<Book>> GetUserCart(AppUser user)
+
+        public async Task<List<BookCartItemDTO>> AddItemToCart(AppUser user, int bookId)
         {
-            return await _context.Carts.Where(u => u.AppUserId == user.Id)
-                .Select(book => new Book
+            var cartItem = await _context.Carts.FirstOrDefaultAsync(c => c.AppUserId == user.Id && c.BookId == bookId);
+            if(cartItem != null)
+            {
+                cartItem.Quantity++;
+            }
+            else
+            {
+                var newCartItem = new Cart
                 {
-                    Id = book.BookId,
-                    Title = book.Book.Title,
-                    Price = book.Book.Price,
-                    Genre = book.Book.Genre,
-                    BookImage = book.Book.BookImage,
-                    AuthorId = book.Book.AuthorId
-                }).ToListAsync();
+                    AppUserId = user.Id,
+                    BookId = bookId,
+                    Quantity = 1
+                };
+                _context.Carts.Add(newCartItem);
+            }
+
+            await _context.SaveChangesAsync();
+            return await _context.Carts.Where(c => c.AppUserId == user.Id).Include(c => c.Book).Select(c => new BookCartItemDTO
+            {
+                Quantity = c.Quantity,
+                Id = c.Book.Id,
+                Title = c.Book.Title,
+                Genre = c.Book.Genre,
+                AuthorId = c.Book.AuthorId,
+                Price = c.Book.Price,
+                SubTotal = c.Book.Price * c.Quantity
+            }).ToListAsync();
+
+        }
+
+        public async Task<List<BookCartItemDTO>> GetUserCart(AppUser user)
+        {
+            return await _context.Carts.Where(c => c.AppUserId == user.Id).Include(c => c.Book).Select(c => new BookCartItemDTO
+            {
+                Quantity = c.Quantity,
+                Id = c.Book.Id,
+                Title = c.Book.Title,
+                Genre = c.Book.Genre,
+                AuthorId = c.Book.AuthorId,
+                Price = c.Book.Price,
+                SubTotal = c.Book.Price * c.Quantity
+            }).ToListAsync();
+        }
+
+        public Task<List<BookCartItemDTO>> RemoveItemFromCart(AppUser user, int bookId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

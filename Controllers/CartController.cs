@@ -1,5 +1,6 @@
 ﻿using BookStore.Data.Extensions;
 using BookStore.Interfaces;
+using BookStore.Models.DTOs.Cart;
 using BookStore.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -31,6 +32,24 @@ namespace BookStore.Controllers
             var userCart = await _cartRepo.GetUserCart(appUser);
             return Ok(userCart);
 
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddCart([FromBody] ActionWithCartDTO dto)
+        {
+            var username = User.GetUsername();
+            var appUser = await _userManager.FindByNameAsync(username); //всё нормально, null не будет из-за того что есть [Authorize]
+            var book = await _bookRepo.GetByTitleAsync(dto.Title);
+
+            if (book == null)
+            {
+                return NotFound("Книга не найдена");
+            }
+
+            var updatedCart = await _cartRepo.AddItemToCart(appUser, book.Id);
+
+            return Ok(updatedCart);
         }
     }
 }
