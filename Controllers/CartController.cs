@@ -51,5 +51,23 @@ namespace BookStore.Controllers
 
             return Ok(updatedCart);
         }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> RemoveCart([FromBody] ActionWithCartDTO dto)
+        {
+            var username = User.GetUsername();
+            var appUser = await _userManager.FindByNameAsync(username);
+            var book = await _bookRepo.GetByTitleAsync(dto.Title);
+
+            if (book == null)
+            {
+                return NotFound("Книга не найдена");
+            }
+
+            var updatedCart = await _cartRepo.RemoveItemFromCart(appUser, book.Id);
+
+            return Ok(updatedCart);
+        }
     }
 }

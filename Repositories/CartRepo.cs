@@ -70,9 +70,31 @@ namespace BookStore.Repositories
             };
         }
 
-        public Task<List<BookCartItemDTO>> RemoveItemFromCart(AppUser user, int bookId)
+        public async Task<List<BookCartItemDTO>> RemoveItemFromCart(AppUser user, int bookId)
         {
-            throw new NotImplementedException();
+            var cartItem = await _context.Carts.FirstOrDefaultAsync(c => c.AppUserId == user.Id && c.BookId == bookId);
+
+            if (cartItem != null)
+            {
+                cartItem.Quantity--;
+            }
+            else if (cartItem.Quantity == 1)
+            {
+                _context.Carts.Remove(cartItem);
+            }
+            await _context.SaveChangesAsync();
+
+            return await _context.Carts.Where(c => c.AppUserId == user.Id).Include(c => c.Book).Select(c => new BookCartItemDTO
+            {
+                Quantity = c.Quantity,
+                Id = c.Book.Id,
+                Title = c.Book.Title,
+                Genre = c.Book.Genre,
+                AuthorId = c.Book.AuthorId,
+                BookImage = c.Book.BookImage,
+                Price = c.Book.Price,
+                SubTotal = c.Book.Price * c.Quantity
+            }).ToListAsync();
         }
     }
 }

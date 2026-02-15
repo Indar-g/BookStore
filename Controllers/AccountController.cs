@@ -76,10 +76,6 @@ namespace BookStore.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!loginDTO.Email.Contains("@"))
-            {
-                return BadRequest("Поле Email должно содержать знак @");
-            }
 
             var user = _userManager.Users.FirstOrDefault(u => u.Email.ToLower() == loginDTO.Email.ToLower()); //проверка почты
             if (user == null) return Unauthorized("Пользователь с таким email не найден");
