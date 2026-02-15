@@ -48,6 +48,7 @@ builder.Services.AddScoped<IBookRepo, BookRepo>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IReviewRepo, ReviewRepo>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ICartRepo, CartRepo>();
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
