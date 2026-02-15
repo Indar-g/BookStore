@@ -40,24 +40,34 @@ namespace BookStore.Repositories
                 Title = c.Book.Title,
                 Genre = c.Book.Genre,
                 AuthorId = c.Book.AuthorId,
+                BookImage = c.Book.BookImage,
                 Price = c.Book.Price,
                 SubTotal = c.Book.Price * c.Quantity
             }).ToListAsync();
 
         }
 
-        public async Task<List<BookCartItemDTO>> GetUserCart(AppUser user)
+        public async Task<CartResult<BookCartItemDTO>> GetUserCart(AppUser user)
         {
-            return await _context.Carts.Where(c => c.AppUserId == user.Id).Include(c => c.Book).Select(c => new BookCartItemDTO
+            var items = await _context.Carts.Where(c => c.AppUserId == user.Id).Include(c => c.Book).Select(c => new BookCartItemDTO
             {
                 Quantity = c.Quantity,
                 Id = c.Book.Id,
                 Title = c.Book.Title,
                 Genre = c.Book.Genre,
                 AuthorId = c.Book.AuthorId,
+                BookImage = c.Book.BookImage,
                 Price = c.Book.Price,
                 SubTotal = c.Book.Price * c.Quantity
             }).ToListAsync();
+
+            var TotalPrice = items.Sum(i => i.SubTotal);
+
+            return new CartResult<BookCartItemDTO>
+            {
+                Total = TotalPrice,
+                Data = items
+            };
         }
 
         public Task<List<BookCartItemDTO>> RemoveItemFromCart(AppUser user, int bookId)

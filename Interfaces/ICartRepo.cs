@@ -5,7 +5,7 @@ namespace BookStore.Interfaces
 {
     public interface ICartRepo
     {
-        Task<List<BookCartItemDTO>> GetUserCart(AppUser user);
+        Task<CartResult<BookCartItemDTO>> GetUserCart(AppUser user);
         Task<List<BookCartItemDTO>> AddItemToCart(AppUser user, int bookId);
         Task<List<BookCartItemDTO>> RemoveItemFromCart(AppUser user, int bookId);
     }

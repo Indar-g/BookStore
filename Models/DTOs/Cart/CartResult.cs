@@ -2,7 +2,7 @@
 {
     public class CartResult<T>
     {
-        public decimal Subtotal { get; set; }
+        public decimal Total { get; set; }
         public IEnumerable<BookCartItemDTO> Data { get; set; } = [];
 
     }
