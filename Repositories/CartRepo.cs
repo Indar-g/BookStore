@@ -14,7 +14,7 @@ namespace BookStore.Repositories
             _context = context;
         }
 
-        public async Task<List<BookCartItemDTO>> AddItemToCart(AppUser user, int bookId)
+        public async Task<CartResult<BookCartItemDTO>> AddItemToCart(AppUser user, int bookId)
         {
             var cartItem = await _context.Carts.FirstOrDefaultAsync(c => c.AppUserId == user.Id && c.BookId == bookId);
             if(cartItem != null)
@@ -33,7 +33,8 @@ namespace BookStore.Repositories
             }
 
             await _context.SaveChangesAsync();
-            return await _context.Carts.Where(c => c.AppUserId == user.Id).Include(c => c.Book).Select(c => new BookCartItemDTO
+
+            var items = await _context.Carts.Where(c => c.AppUserId == user.Id).Include(c => c.Book).Select(c => new BookCartItemDTO
             {
                 Quantity = c.Quantity,
                 Id = c.Book.Id,
@@ -44,6 +45,14 @@ namespace BookStore.Repositories
                 Price = c.Book.Price,
                 SubTotal = c.Book.Price * c.Quantity
             }).ToListAsync();
+
+            var TotalPrice = items.Sum(i => i.SubTotal);
+
+            return new CartResult<BookCartItemDTO>
+            {
+                Total = TotalPrice,
+                Data = items
+            };
 
         }
 
@@ -70,7 +79,7 @@ namespace BookStore.Repositories
             };
         }
 
-        public async Task<List<BookCartItemDTO>> RemoveItemFromCart(AppUser user, int bookId)
+        public async Task<CartResult<BookCartItemDTO>> RemoveItemFromCart(AppUser user, int bookId)
         {
             var cartItem = await _context.Carts.FirstOrDefaultAsync(c => c.AppUserId == user.Id && c.BookId == bookId);
 
@@ -78,13 +87,20 @@ namespace BookStore.Repositories
             {
                 cartItem.Quantity--;
             }
-            else if (cartItem.Quantity == 1)
+
+            if (cartItem == null)
+            {
+                return null;
+            }
+
+            if (cartItem.Quantity == 1)
             {
                 _context.Carts.Remove(cartItem);
-            }
-            await _context.SaveChangesAsync();
+            } 
+            
+                await _context.SaveChangesAsync();
 
-            return await _context.Carts.Where(c => c.AppUserId == user.Id).Include(c => c.Book).Select(c => new BookCartItemDTO
+            var items = await _context.Carts.Where(c => c.AppUserId == user.Id).Include(c => c.Book).Select(c => new BookCartItemDTO
             {
                 Quantity = c.Quantity,
                 Id = c.Book.Id,
@@ -95,6 +111,14 @@ namespace BookStore.Repositories
                 Price = c.Book.Price,
                 SubTotal = c.Book.Price * c.Quantity
             }).ToListAsync();
+
+            var TotalPrice = items.Sum(i => i.SubTotal);
+
+            return new CartResult<BookCartItemDTO>
+            {
+                Total = TotalPrice,
+                Data = items
+            };
         }
     }
 }

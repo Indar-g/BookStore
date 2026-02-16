@@ -40,7 +40,7 @@ namespace BookStore.Controllers
         {
             var username = User.GetUsername();
             var appUser = await _userManager.FindByNameAsync(username); //всё нормально, null не будет из-за того что есть [Authorize]
-            var book = await _bookRepo.GetByTitleAsync(dto.Title);
+            var book = await _bookRepo.GetByIdAsync(dto.Id);
 
             if (book == null)
             {
@@ -58,7 +58,7 @@ namespace BookStore.Controllers
         {
             var username = User.GetUsername();
             var appUser = await _userManager.FindByNameAsync(username);
-            var book = await _bookRepo.GetByTitleAsync(dto.Title);
+            var book = await _bookRepo.GetByIdAsync(dto.Id);
 
             if (book == null)
             {
@@ -66,6 +66,11 @@ namespace BookStore.Controllers
             }
 
             var updatedCart = await _cartRepo.RemoveItemFromCart(appUser, book.Id);
+
+            if(updatedCart == null)
+            {
+                return BadRequest("Книга не существует в корзине");
+            }
 
             return Ok(updatedCart);
         }

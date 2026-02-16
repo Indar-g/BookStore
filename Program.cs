@@ -58,7 +58,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequiredLength = 8;
     options.User.RequireUniqueEmail = true; //для нормального входа по почте чтобы не было одинаковых адресов
-})
+}) //пароль и почта
 .AddEntityFrameworkStores<AppDbContext>();
 
 //Диплом
@@ -72,7 +72,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters
+    options.TokenValidationParameters = new TokenValidationParameters 
     {
         ValidateIssuer = true,
         ValidIssuer = builder.Configuration["JWT:Issuer"],

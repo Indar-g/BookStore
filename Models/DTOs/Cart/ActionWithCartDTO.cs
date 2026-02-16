@@ -2,6 +2,6 @@
 {
     public class ActionWithCartDTO
     {
-        public string Title { get; set; } = string.Empty;
+        public int Id { get; set; }
     }
 }
