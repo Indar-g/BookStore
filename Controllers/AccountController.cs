@@ -44,12 +44,13 @@ namespace BookStore.Controllers
                     var roleResult = await _userManager.AddToRoleAsync(appUser, "User"); // если создание пользователя успешно, присваиваем любому зарегистрировавшемуся роль User
                     if (roleResult.Succeeded)
                     {
+                        var userRoles = await _userManager.GetRolesAsync(appUser);
                         return Ok(
                             new NewUserDTO
                             {
                                 UserName = appUser.UserName,
                                 Email = appUser.Email,
-                                Token = _tokenService.CreateToken(appUser)
+                                Token = _tokenService.CreateToken(appUser, userRoles)
                             }
                             );
                     } else
@@ -82,13 +83,15 @@ namespace BookStore.Controllers
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
 
+            var userRoles = await _userManager.GetRolesAsync(user);
+
             if (!result.Succeeded) return Unauthorized("Почта либо пароль не совпадают"); //не даём понять что именно было не так введено
 
             return Ok(new NewUserDTO
             {
                 UserName = user.UserName,
                 Email = user.Email,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user, userRoles)
             });
         }
     }

@@ -25,6 +25,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromForm] CreateBookRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -79,6 +80,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromForm] UpdateBookRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -140,6 +142,7 @@ namespace BookStore.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var book = await _bookRepo.GetByIdAsync(id);

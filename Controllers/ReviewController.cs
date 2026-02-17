@@ -49,6 +49,7 @@ namespace BookStore.Controllers
         }
 
         [HttpDelete]
+        //нужно будет сделать так что удалять можно только свои комментарии
         [Route("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {

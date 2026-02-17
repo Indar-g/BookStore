@@ -2,6 +2,7 @@
 using BookStore.Interfaces;
 using BookStore.Mappers;
 using BookStore.Models.DTOs.Author;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,6 +56,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateAuthorRequestDTO authorDTO)
         {
             var authorModel = authorDTO.ToAuthorFromCreateDTO();
@@ -72,6 +74,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         [Route("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id, UpdateAuthorRequestDTO authorDTO)
         {
@@ -86,7 +89,9 @@ namespace BookStore.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         [Route("{id:int}")]
+
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var authorModel = await _authorRepo.Delete(id);
