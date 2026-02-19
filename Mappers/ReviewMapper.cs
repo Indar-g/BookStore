@@ -14,6 +14,7 @@ namespace BookStore.Mappers
                 Content = review.Content,
                 Created = review.Created,
                 BookId = review.BookId,
+                CreatedBy = review.AppUser.UserName
             };
         }
         public static Review ToReviewFromCreateDTO(this CreateReviewRequestDTO reviewDTO, int bookId)

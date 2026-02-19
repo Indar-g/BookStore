@@ -55,7 +55,7 @@ namespace BookStore.Repositories
 
         public async Task<PagedResult<Book>> GetAllAsync(QueryObject query)
         {
-            var books = _context.Books.Include(b => b.Author).Include(b => b.Reviews).AsQueryable();
+            var books = _context.Books.Include(b => b.Author).Include(b => b.Reviews).ThenInclude(r => r.AppUser).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.Title))
             {
@@ -101,12 +101,12 @@ namespace BookStore.Repositories
 
         public async Task<Book?> GetByIdAsync(int id)
         {   
-            return await _context.Books.Include(b => b.Author).Include(b => b.Reviews).FirstOrDefaultAsync(b => b.Id == id);
+            return await _context.Books.Include(b => b.Author).Include(b => b.Reviews).ThenInclude(r => r.AppUser).FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<Book?> GetByTitleAsync(string title)
         {
-            return await _context.Books.Include(b => b.Author).Include(b => b.Reviews).FirstOrDefaultAsync(b => b.Title.ToLower() == title.ToLower());
+            return await _context.Books.Include(b => b.Author).Include(b => b.Reviews).ThenInclude(r => r.AppUser).FirstOrDefaultAsync(b => b.Title.ToLower() == title.ToLower());
         }
 
         public async Task<Book> UpdateAsync(Book book)

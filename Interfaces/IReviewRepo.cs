@@ -8,6 +8,8 @@ namespace BookStore.Interfaces
         Task <List<Review>> GetAllAsync();
         Task <Review?> Delete(int id);
         Task<Review?> UpdateAsync(Review review, int id);
+        Task<Review?> GetByIdAsync(int id);
+        Task<bool> DeleteReviewOfUser(int reviewId, string userId);
 
     }
 }

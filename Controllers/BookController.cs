@@ -58,7 +58,6 @@ namespace BookStore.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
             var pagedResult = await _bookRepo.GetAllAsync(query);

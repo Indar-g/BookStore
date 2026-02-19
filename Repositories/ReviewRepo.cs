@@ -33,9 +33,36 @@ namespace BookStore.Repositories
             return review;
         }
 
+        public async Task<bool> DeleteReviewOfUser(int reviewId, string userId)
+        {
+            var review = await _context.Reviews.FirstOrDefaultAsync(r => r.Id == reviewId && r.AppUserId == userId);
+
+            if(review is null)
+            {
+                return false;
+            }
+
+            _context.Reviews.Remove(review);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<List<Review>> GetAllAsync()
         {
-            return await _context.Reviews.ToListAsync();
+            return await _context.Reviews.Include(r => r.AppUser).ToListAsync();
+        }
+
+        public async Task<Review?> GetByIdAsync(int id)
+        {
+            var review = await _context.Reviews.Include(r => r.AppUser).FirstOrDefaultAsync(r => r.Id == id);
+
+            if (review is null)
+            {
+                return null;
+            }
+
+            return review;
         }
 
         public async Task<Review?> UpdateAsync(Review review, int id)

@@ -12,5 +12,8 @@ namespace BookStore.Models.Entities
 
         public Book? Book { get; set; }
         public int BookId { get; set; }
+
+        public AppUser AppUser { get; set; } 
+        public string AppUserId { get; set; }
     }
 }
