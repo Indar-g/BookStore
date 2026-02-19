@@ -1,4 +1,5 @@
 ﻿using BookStore.Data;
+using BookStore.Helpers;
 using BookStore.Interfaces;
 using BookStore.Models.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -48,9 +49,19 @@ namespace BookStore.Repositories
             return true;
         }
 
-        public async Task<List<Review>> GetAllAsync()
+        public async Task<List<Review>> GetAllAsync(ReviewQueryObject query)
         {
-            return await _context.Reviews.Include(r => r.AppUser).ToListAsync();
+            var reviews = _context.Reviews.Include(r => r.AppUser).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(query.BookTitle))
+            {
+                reviews = reviews.Where(r => r.Book.Title.ToLower() == query.BookTitle.ToLower());
+            };
+            if (query.IsDescending == true)
+            {
+                reviews = reviews.OrderByDescending(r => r.Created);
+            }
+            return await reviews.ToListAsync();
         }
 
         public async Task<Review?> GetByIdAsync(int id)

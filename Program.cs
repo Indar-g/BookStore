@@ -96,6 +96,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors(options => options
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials()
+    //.WithOrigins("https://localhost:7174")
+    .SetIsOriginAllowed(origin => true)
+);
+
 
 app.UseAuthentication();
 app.UseAuthorization();

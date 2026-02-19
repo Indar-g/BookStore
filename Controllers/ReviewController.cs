@@ -1,4 +1,5 @@
 ﻿using BookStore.Data.Extensions;
+using BookStore.Helpers;
 using BookStore.Interfaces;
 using BookStore.Mappers;
 using BookStore.Models.DTOs.Review;
@@ -28,9 +29,9 @@ namespace BookStore.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery]ReviewQueryObject query)
         {
-            var reviews = await _reviewRepo.GetAllAsync();
+            var reviews = await _reviewRepo.GetAllAsync(query);
             var reviewsDTO = reviews.Select(r => r.ToReviewDTO());
             return Ok(reviewsDTO);
         }
