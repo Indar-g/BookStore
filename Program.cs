@@ -57,11 +57,11 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequiredLength = 8;
-    options.User.RequireUniqueEmail = true; //��� ����������� ����� �� ����� ����� �� ���� ���������� �������
-}) //������ � �����
+    options.User.RequireUniqueEmail = true; //made so that there can be no same emails
+}) //password and email requirements
 .AddEntityFrameworkStores<AppDbContext>();
 
-//������
+//diplom
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme =
