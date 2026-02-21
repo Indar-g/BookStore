@@ -51,7 +51,7 @@ namespace BookStore.Repositories
 
         public async Task<List<Author>> GetAllAsync()
         {
-            return await _context.Authors.Include(a => a.Books).ThenInclude(b => b.Reviews).ToListAsync();
+            return await _context.Authors.Include(a => a.Books).ThenInclude(b => b.Reviews).ThenInclude(r => r.AppUser).ToListAsync();
         }
 
         public async Task<Author?> GetByIdAsync(int id)
